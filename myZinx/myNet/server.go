@@ -18,6 +18,15 @@ func (s *ServeNode) Serve() {
 
 }
 
+func Handle(conn *net.TCPConn, data []byte, cnt int) error {
+	for i := 0; i < cnt; i++ {
+		data[i]++
+	}
+
+	_, err := conn.Write(data[:cnt])
+	return err
+}
+
 func (s *ServeNode) Start() {
 	log.Println("Start...", s.Ip+":"+strconv.Itoa(s.Port))
 	addr, err := net.ResolveTCPAddr(s.IpVersion, s.Ip+":"+strconv.Itoa(s.Port))
@@ -33,6 +42,10 @@ func (s *ServeNode) Start() {
 	}
 
 	log.Println("Start Success !", s.Name)
+
+	var connID uint32
+	connID = 0
+
 	for {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
@@ -40,26 +53,9 @@ func (s *ServeNode) Start() {
 			continue
 		}
 
-		go func() {
-			for {
-				buf := make([]byte, 512) // max 512 byte
-				cnt, err := conn.Read(buf)
-				if err != nil {
-					log.Println("Read error ", err)
-					break
-				}
-
-				for i := 0; i < cnt; i++ {
-					buf[i]--
-				}
-
-				_, err = conn.Write(buf[:cnt])
-				if err != nil {
-					log.Println("Write error ", err)
-					continue
-				}
-			}
-		}()
+		c := NewConnection(conn, connID, Handle)
+		connID++
+		go c.Start()
 	}
 }
 
