@@ -1,6 +1,7 @@
 package myNet
 
 import (
+	"awesomeProject/myZinx/myInterface"
 	"log"
 	"net"
 	"strconv"
@@ -11,20 +12,11 @@ type ServeNode struct {
 	Ip        string
 	Port      int
 	IpVersion string
+	router    myInterface.IRouter
 }
 
 func (s *ServeNode) Serve() {
 	s.Start()
-
-}
-
-func Handle(conn *net.TCPConn, data []byte, cnt int) error {
-	for i := 0; i < cnt; i++ {
-		data[i]++
-	}
-
-	_, err := conn.Write(data[:cnt])
-	return err
 }
 
 func (s *ServeNode) Start() {
@@ -53,7 +45,7 @@ func (s *ServeNode) Start() {
 			continue
 		}
 
-		c := NewConnection(conn, connID, Handle)
+		c := NewConnection(conn, connID, s.router)
 		connID++
 		go c.Start()
 	}
@@ -63,12 +55,17 @@ func (s *ServeNode) Stop() {
 
 }
 
+func (s *ServeNode) SetRouter(router myInterface.IRouter) {
+	s.router = router
+}
+
 func NewServe(nameServe string) *ServeNode {
 	s := &ServeNode{
 		Name:      nameServe,
 		Ip:        "0.0.0.0",
 		Port:      8999,
 		IpVersion: "tcp4",
+		router:    nil,
 	}
 	return s
 }

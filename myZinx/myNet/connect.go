@@ -7,20 +7,20 @@ import (
 )
 
 type Connect struct {
-	Conn      *net.TCPConn
-	ConnID    uint32
-	IsClosed  bool
-	HandleAPI myInterface.HandleFunc
-	ExitChan  chan bool
+	Conn     *net.TCPConn
+	ConnID   uint32
+	IsClosed bool
+	ExitChan chan bool
+	router   myInterface.IRouter
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.HandleFunc) *Connect {
+func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IRouter) *Connect {
 	c := &Connect{
-		Conn:      conn,
-		ConnID:    connID,
-		IsClosed:  false,
-		HandleAPI: call,
-		ExitChan:  make(chan bool, 1), // TODO
+		Conn:     conn,
+		ConnID:   connID,
+		IsClosed: false,
+		router:   call,
+		ExitChan: make(chan bool, 1), // TODO
 	}
 	return c
 }
@@ -36,20 +36,25 @@ func (c *Connect) StartRead() {
 			break
 		}
 
-		err = c.HandleAPI(c.Conn, buf, cnt)
-		if err != nil {
-			log.Println("Handle API error ", err)
+		// TODO
+		r := &Request{
+			conn: c,
+			data: buf,
+			cnt:  cnt,
 		}
+		c.router.PreHandle(r)
+		c.router.Handle(r)
+		c.router.PostHandle(r)
 	}
 }
 
 func (c *Connect) Start() {
-	log.Println("Start Connect ID:", c.ConnID)
+	log.Println("Start iConnect ID:", c.ConnID)
 	go c.StartRead()
 }
 
 func (c *Connect) Stop() {
-	log.Println("Stop Connect ID:", c.ConnID)
+	log.Println("Stop iConnect ID:", c.ConnID)
 	if c.IsClosed == true {
 		return
 	}

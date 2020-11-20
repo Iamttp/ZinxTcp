@@ -1,9 +1,11 @@
 package myInterface
 
-type Server interface {
+type IServer interface {
 	Serve()
 
 	Stop()
 
 	Start()
+
+	SetRouter(router IRouter)
 }

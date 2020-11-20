@@ -21,7 +21,7 @@ func main() {
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println("Read Error ", err)
-			continue
+			break
 		}
 		log.Println(string(buf[:n]))
 		time.Sleep(time.Second)

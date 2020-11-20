@@ -2,7 +2,7 @@ package myInterface
 
 import "net"
 
-type Connect interface {
+type IConnect interface {
 	Start()
 
 	Stop()
@@ -13,5 +13,3 @@ type Connect interface {
 
 	GetRemoteAdd() net.Addr
 }
-
-type HandleFunc func(*net.TCPConn, []byte, int) error
