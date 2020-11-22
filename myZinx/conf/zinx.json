@@ -1,0 +1,7 @@
+{
+  "Name": "myZinx",
+  "Ip": "0.0.0.0",
+  "Port": 8999,
+  "IpVersion": "tcp4",
+  "MaxReadSize": 512
+}

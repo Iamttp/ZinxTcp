@@ -2,6 +2,7 @@ package myNet
 
 import (
 	"awesomeProject/myZinx/myInterface"
+	"awesomeProject/myZinx/untils"
 	"log"
 	"net"
 	"strconv"
@@ -59,12 +60,12 @@ func (s *ServeNode) SetRouter(router myInterface.IRouter) {
 	s.router = router
 }
 
-func NewServe(nameServe string) *ServeNode {
+func NewServe() *ServeNode {
 	s := &ServeNode{
-		Name:      nameServe,
-		Ip:        "0.0.0.0",
-		Port:      8999,
-		IpVersion: "tcp4",
+		Name:      untils.GlobalObj.Name,
+		Ip:        untils.GlobalObj.Ip,
+		Port:      untils.GlobalObj.Port,
+		IpVersion: untils.GlobalObj.IpVersion,
 		router:    nil,
 	}
 	return s

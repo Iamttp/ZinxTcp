@@ -29,7 +29,7 @@ func (pr *PingRouter) Handle(request myInterface.IRequest) {
 }
 
 func main() {
-	s := myNet.NewServe("my")
+	s := myNet.NewServe()
 
 	pr := &PingRouter{}
 	s.SetRouter(pr)

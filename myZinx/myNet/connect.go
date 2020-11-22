@@ -2,6 +2,7 @@ package myNet
 
 import (
 	"awesomeProject/myZinx/myInterface"
+	"awesomeProject/myZinx/untils"
 	"log"
 	"net"
 )
@@ -29,7 +30,7 @@ func (c *Connect) StartRead() {
 	defer c.Stop()
 
 	for {
-		buf := make([]byte, 512) // max 512 byte
+		buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte
 		cnt, err := c.Conn.Read(buf)
 		if err != nil {
 			log.Println("Read error ", err)
