@@ -29,6 +29,8 @@ func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IRouter) *
 func (c *Connect) StartRead() {
 	defer c.Stop()
 
+	dpk := NewDataPack()
+
 	for {
 		buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte
 		cnt, err := c.Conn.Read(buf)
@@ -37,11 +39,15 @@ func (c *Connect) StartRead() {
 			break
 		}
 
+		msg, err := dpk.Unpack(buf[:cnt])
+		if err != nil {
+			log.Println("Read Data Error ", err)
+			continue
+		}
 		// TODO
 		r := &Request{
 			conn: c,
-			data: buf,
-			cnt:  cnt,
+			msg:  msg,
 		}
 		c.router.PreHandle(r)
 		c.router.Handle(r)
@@ -74,4 +80,19 @@ func (c *Connect) GetIdConnect() uint32 {
 
 func (c *Connect) GetRemoteAdd() net.Addr {
 	return c.Conn.RemoteAddr()
+}
+
+func (c *Connect) SendMsg(msg myInterface.IMessage) {
+	dpk := NewDataPack()
+	binary, err := dpk.Pack(msg)
+	if err != nil {
+		log.Println("Msg Pack Error ", err)
+		return
+	}
+
+	_, err = c.Conn.Write(binary)
+	if err != nil {
+		log.Println("Send Msg ", err)
+		return
+	}
 }

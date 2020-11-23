@@ -4,18 +4,25 @@ import "awesomeProject/myZinx/myInterface"
 
 type Request struct {
 	conn myInterface.IConnect
-	data []byte
-	cnt  int
-}
-
-func (r *Request) GetData() []byte {
-	return r.data
+	msg  myInterface.IMessage
 }
 
 func (r *Request) GetConnect() myInterface.IConnect {
 	return r.conn
 }
 
-func (r *Request) GetCnt() int {
-	return r.cnt
+func (r *Request) GetData() []byte {
+	return r.msg.GetData()
+}
+
+func (r *Request) GetCnt() uint32 {
+	return r.msg.GetLen()
+}
+
+func (r *Request) GetId() uint32 {
+	return r.msg.GetId()
+}
+
+func (r *Request) GetMsg() myInterface.IMessage {
+	return r.msg
 }

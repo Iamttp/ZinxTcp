@@ -12,4 +12,6 @@ type IConnect interface {
 	GetIdConnect() uint32
 
 	GetRemoteAdd() net.Addr
+
+	SendMsg(msg IMessage)
 }

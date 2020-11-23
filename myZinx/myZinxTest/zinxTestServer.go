@@ -13,18 +13,18 @@ type PingRouter struct {
 func (pr *PingRouter) Handle(request myInterface.IRequest) {
 	log.Println("Start Handle")
 
-	cnt := request.GetCnt()
-	data := request.GetData()
-	cnn := request.GetConnect().GetTcpConnect()
+	msg := request.GetMsg()
+	log.Println("Server Get Msg : ", msg)
 
-	for i := 0; i < cnt; i++ {
-		data[i]--
-	}
-
-	_, err := cnn.Write(data[:cnt])
-	if err != nil {
-		log.Println("Write Error ")
-		return
+	if msg.GetId() == 0 {
+		data := msg.GetData()
+		dataLen := int(msg.GetLen())
+		for i := 0; i < dataLen; i++ {
+			data[i]--
+		}
+		msg.SetData(data)
+		msg.SetId(1)
+		request.GetConnect().SendMsg(msg)
 	}
 }
 

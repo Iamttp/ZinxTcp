@@ -1,9 +1,13 @@
 package myInterface
 
 type IRequest interface {
+	GetConnect() IConnect
+
+	GetMsg() IMessage
+
 	GetData() []byte
 
-	GetCnt() int
+	GetCnt() uint32
 
-	GetConnect() IConnect
+	GetId() uint32
 }
