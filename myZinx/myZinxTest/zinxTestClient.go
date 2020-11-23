@@ -19,17 +19,24 @@ func main() {
 
 	sendMsg := myNet.Message{}
 	sendMsg.SetData(data[:])
-	sendMsg.SetId(0)
 	sendMsg.SetLen(uint32(len(data)))
 
 	dpk := myNet.NewDataPack()
-	binaryData, err := dpk.Pack(&sendMsg)
-	if err != nil {
-		log.Println(err)
-		return
-	}
 
+	var i bool
 	for {
+		if i {
+			sendMsg.SetId(1)
+		} else {
+			sendMsg.SetId(0)
+		}
+		i = !i
+		binaryData, err := dpk.Pack(&sendMsg)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		conn.Write(binaryData)
 
 		buf := make([]byte, 512)

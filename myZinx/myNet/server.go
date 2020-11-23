@@ -13,7 +13,7 @@ type ServeNode struct {
 	Ip        string
 	Port      int
 	IpVersion string
-	router    myInterface.IRouter
+	router    myInterface.IMsgRouter
 }
 
 func (s *ServeNode) Serve() {
@@ -56,8 +56,8 @@ func (s *ServeNode) Stop() {
 
 }
 
-func (s *ServeNode) SetRouter(router myInterface.IRouter) {
-	s.router = router
+func (s *ServeNode) AddRouter(id uint32, router myInterface.IRouter) {
+	s.router.AddRouter(id, router)
 }
 
 func NewServe() *ServeNode {
@@ -66,7 +66,7 @@ func NewServe() *ServeNode {
 		Ip:        untils.GlobalObj.Ip,
 		Port:      untils.GlobalObj.Port,
 		IpVersion: untils.GlobalObj.IpVersion,
-		router:    nil,
+		router:    NewMsgRouter(),
 	}
 	return s
 }

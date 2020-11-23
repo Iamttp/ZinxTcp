@@ -12,10 +12,10 @@ type Connect struct {
 	ConnID   uint32
 	IsClosed bool
 	ExitChan chan bool
-	router   myInterface.IRouter
+	router   myInterface.IMsgRouter
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IRouter) *Connect {
+func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IMsgRouter) *Connect {
 	c := &Connect{
 		Conn:     conn,
 		ConnID:   connID,
@@ -49,9 +49,8 @@ func (c *Connect) StartRead() {
 			conn: c,
 			msg:  msg,
 		}
-		c.router.PreHandle(r)
-		c.router.Handle(r)
-		c.router.PostHandle(r)
+
+		go c.router.DoMsgHandier(r) // TODO go
 	}
 }
 
