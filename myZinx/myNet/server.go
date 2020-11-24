@@ -48,7 +48,7 @@ func (s *ServeNode) Start() {
 
 		c := NewConnection(conn, connID, s.router)
 		connID++
-		go c.Start()
+		c.Start() // TODO go
 	}
 }
 

@@ -53,5 +53,5 @@ func main() {
 	hr := &HelloRouter{}
 	s.AddRouter(0, pr)
 	s.AddRouter(1, hr)
-	s.Start()
+	s.Serve()
 }

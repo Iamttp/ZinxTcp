@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Window下先go build得到exe文件，然后新建.bat文件，复制多份start /min ./zinxTestClient.exe，创建多个客户端
 func main() {
 	log.Println("Client Start...")
 
