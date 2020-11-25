@@ -13,6 +13,7 @@ type GlobalObject struct {
 	Port        int
 	IpVersion   string
 	MaxReadSize int
+	MaxConnect  int
 }
 
 var GlobalObj GlobalObject
@@ -28,6 +29,7 @@ func init() {
 
 	// default value
 	GlobalObj.MaxReadSize = 512
+	GlobalObj.MaxConnect = 512
 	GlobalObj.IpVersion = "tcp4"
 	GlobalObj.Ip = "0.0.0.0"
 	GlobalObj.Port = 8999

@@ -31,7 +31,7 @@ func (dpk *DataPack) Unpack(dataPack []byte) (myInterface.IMessage, error) {
 		return nil, err
 	}
 
-	// TODO
+	// TODO 拷贝性能考虑
 	temp := make([]byte, m.len)
 	err = binary.Read(dr, binary.LittleEndian, temp)
 	if err != nil {

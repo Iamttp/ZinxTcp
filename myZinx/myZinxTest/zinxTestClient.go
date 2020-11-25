@@ -8,7 +8,7 @@ import (
 )
 
 // Window下先go build得到exe文件，然后新建.bat文件，复制多份start /min ./zinxTestClient.exe，创建多个客户端
-func main() {
+func main1() {
 	log.Println("Client Start...")
 
 	conn, err := net.Dial("tcp", "127.0.0.1:8999")

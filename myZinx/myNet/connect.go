@@ -14,9 +14,10 @@ type Connect struct {
 	router   myInterface.IMsgRouter
 	ExitChan chan bool
 	MsgChan  chan []byte
+	server   myInterface.IServer
 }
 
-func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IMsgRouter) *Connect {
+func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IMsgRouter, server myInterface.IServer) *Connect {
 	c := &Connect{
 		Conn:     conn,
 		ConnID:   connID,
@@ -24,6 +25,7 @@ func NewConnection(conn *net.TCPConn, connID uint32, call myInterface.IMsgRouter
 		router:   call,
 		ExitChan: make(chan bool, 1),
 		MsgChan:  make(chan []byte),
+		server:   server,
 	}
 	return c
 }
@@ -52,6 +54,7 @@ func (c *Connect) StartRead() {
 			msg:  msg,
 		}
 
+		// TODO GrPool 对 DoMsgHandier 考虑GrPool
 		go c.router.DoMsgHandier(r)
 	}
 }
@@ -74,12 +77,16 @@ func (c *Connect) StartWrite() {
 
 func (c *Connect) Start() {
 	log.Println("Start iConnect ID:", c.ConnID)
+	c.server.GetManager().Add(c)
+
 	go c.StartRead()
 	go c.StartWrite()
 }
 
 func (c *Connect) Stop() {
 	log.Println("Stop iConnect ID:", c.ConnID)
+	c.server.GetManager().Remove(c)
+
 	if c.IsClosed == true {
 		return
 	}

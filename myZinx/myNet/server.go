@@ -9,11 +9,12 @@ import (
 )
 
 type ServeNode struct {
-	Name      string
-	Ip        string
-	Port      int
-	IpVersion string
-	router    myInterface.IMsgRouter
+	Name        string
+	Ip          string
+	Port        int
+	IpVersion   string
+	router      myInterface.IMsgRouter
+	connManager myInterface.IConnManager
 }
 
 func (s *ServeNode) Serve() {
@@ -21,6 +22,7 @@ func (s *ServeNode) Serve() {
 }
 
 func (s *ServeNode) Start() {
+	defer s.Stop()
 	log.Println("Start...", s.Ip+":"+strconv.Itoa(s.Port))
 	addr, err := net.ResolveTCPAddr(s.IpVersion, s.Ip+":"+strconv.Itoa(s.Port))
 	if err != nil {
@@ -46,27 +48,40 @@ func (s *ServeNode) Start() {
 			continue
 		}
 
-		c := NewConnection(conn, connID, s.router)
+		if untils.GlobalObj.MaxConnect <= s.GetManager().Len() {
+			// TODO conn 返回到达最大连接数提示
+			log.Println("Connect is Maxed")
+			conn.Close()
+			continue
+		}
+
+		c := NewConnection(conn, connID, s.router, s)
 		connID++
-		c.Start() // TODO go
+		c.Start() // TODO go 是否有必要添加go
 	}
 }
 
 func (s *ServeNode) Stop() {
-
+	log.Println("Stop...", s.Ip+":"+strconv.Itoa(s.Port))
+	s.connManager.Clear()
 }
 
 func (s *ServeNode) AddRouter(id uint32, router myInterface.IRouter) {
 	s.router.AddRouter(id, router)
 }
 
+func (s *ServeNode) GetManager() myInterface.IConnManager {
+	return s.connManager
+}
+
 func NewServe() *ServeNode {
 	s := &ServeNode{
-		Name:      untils.GlobalObj.Name,
-		Ip:        untils.GlobalObj.Ip,
-		Port:      untils.GlobalObj.Port,
-		IpVersion: untils.GlobalObj.IpVersion,
-		router:    NewMsgRouter(),
+		Name:        untils.GlobalObj.Name,
+		Ip:          untils.GlobalObj.Ip,
+		Port:        untils.GlobalObj.Port,
+		IpVersion:   untils.GlobalObj.IpVersion,
+		router:      NewMsgRouter(),
+		connManager: NewConnManage(),
 	}
 	return s
 }

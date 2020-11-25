@@ -8,4 +8,6 @@ type IServer interface {
 	Start()
 
 	AddRouter(id uint32, router IRouter)
+
+	GetManager() IConnManager
 }
