@@ -81,6 +81,7 @@ func (c *Connect) Start() {
 
 	go c.StartRead()
 	go c.StartWrite()
+	c.server.CallOnConnStart(c)
 }
 
 func (c *Connect) Stop() {
@@ -90,6 +91,9 @@ func (c *Connect) Stop() {
 	if c.IsClosed == true {
 		return
 	}
+
+	c.server.CallOnConnStop(c)
+
 	c.IsClosed = true
 	c.ExitChan <- true
 

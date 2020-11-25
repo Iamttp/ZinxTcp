@@ -46,6 +46,14 @@ func (pr *HelloRouter) Handle(request myInterface.IRequest) {
 	request.GetConnect().SendMsg(msg)
 }
 
+func onConnStart(conn myInterface.IConnect) {
+	log.Println(conn.GetIdConnect(), " Start")
+}
+
+func onConnStop(conn myInterface.IConnect) {
+	log.Println(conn.GetIdConnect(), " Stop")
+}
+
 func main() {
 	s := myNet.NewServe()
 
@@ -53,5 +61,9 @@ func main() {
 	hr := &HelloRouter{}
 	s.AddRouter(0, pr)
 	s.AddRouter(1, hr)
+
+	s.SetOnConnStart(onConnStart)
+	s.SetOnConnStop(onConnStop)
+
 	s.Serve()
 }

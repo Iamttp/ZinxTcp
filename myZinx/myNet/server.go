@@ -15,6 +15,12 @@ type ServeNode struct {
 	IpVersion   string
 	router      myInterface.IMsgRouter
 	connManager myInterface.IConnManager
+
+	// 添加连接开启和结束方法
+	onConnStart func(conn myInterface.IConnect)
+	onConnStop  func(conn myInterface.IConnect)
+
+	// TODO 添加连接可访问属性 map[string]interface{}
 }
 
 func (s *ServeNode) Serve() {
@@ -74,6 +80,26 @@ func (s *ServeNode) GetManager() myInterface.IConnManager {
 	return s.connManager
 }
 
+func (s *ServeNode) SetOnConnStart(onConnStart func(conn myInterface.IConnect)) {
+	s.onConnStart = onConnStart
+}
+
+func (s *ServeNode) SetOnConnStop(onConnStop func(conn myInterface.IConnect)) {
+	s.onConnStop = onConnStop
+}
+
+func (s *ServeNode) CallOnConnStart(conn myInterface.IConnect) {
+	if s.onConnStart != nil {
+		s.onConnStart(conn)
+	}
+}
+
+func (s *ServeNode) CallOnConnStop(conn myInterface.IConnect) {
+	if s.onConnStop != nil {
+		s.onConnStop(conn)
+	}
+}
+
 func NewServe() *ServeNode {
 	s := &ServeNode{
 		Name:        untils.GlobalObj.Name,
@@ -82,6 +108,8 @@ func NewServe() *ServeNode {
 		IpVersion:   untils.GlobalObj.IpVersion,
 		router:      NewMsgRouter(),
 		connManager: NewConnManage(),
+		onConnStart: nil,
+		onConnStop:  nil,
 	}
 	return s
 }

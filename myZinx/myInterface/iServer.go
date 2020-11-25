@@ -10,4 +10,12 @@ type IServer interface {
 	AddRouter(id uint32, router IRouter)
 
 	GetManager() IConnManager
+
+	SetOnConnStart(onConnStart func(conn IConnect))
+
+	SetOnConnStop(onConnStop func(conn IConnect))
+
+	CallOnConnStart(conn IConnect)
+
+	CallOnConnStop(conn IConnect)
 }
