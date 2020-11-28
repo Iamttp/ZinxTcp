@@ -20,7 +20,7 @@ type ServeNode struct {
 	onConnStart func(conn myInterface.IConnect)
 	onConnStop  func(conn myInterface.IConnect)
 
-	// TODO 添加连接可访问属性 map[string]interface{}
+	// TODO iConnect中为每个连接 提供添加 可访问属性 map[string]interface{} 让用户可以在onConnStart中设置
 }
 
 func (s *ServeNode) Serve() {
