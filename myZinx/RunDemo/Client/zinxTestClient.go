@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/myZinx/myNet"
+	"awesomeProject/myZinx/untils"
 	"log"
 	"net"
 	"time"
@@ -40,13 +41,13 @@ func main() {
 
 		conn.Write(binaryData)
 
-		buf := make([]byte, 512)
+		buf := make([]byte, untils.GlobalObj.MaxReadSize)
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println("Read Error ", err)
 			break
 		}
-		getMsg, err := dpk.Unpack(buf[:n])
+		getMsg, err := dpk.Unpack(buf[:n], 0)
 		if err != nil {
 			log.Println("Read Message Error ", err)
 			break

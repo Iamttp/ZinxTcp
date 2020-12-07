@@ -14,26 +14,44 @@ func NewDataPack() *DataPack {
 	return &DataPack{}
 }
 
-func (dpk *DataPack) Unpack(dataPack []byte) (myInterface.IMessage, error) {
-	dr := bytes.NewReader(dataPack)
+//func (dpk *DataPack) Unpack(dataPack []byte) (myInterface.IMessage, error) {
+//	dr := bytes.NewReader(dataPack)
+//	m := Message{}
+//
+//	err := binary.Read(dr, binary.LittleEndian, &m.len)
+//	if err != nil {
+//		return nil, err
+//	}
+//	err = binary.Read(dr, binary.LittleEndian, &m.id)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	// TODO 拷贝性能考虑
+//	temp := make([]byte, m.len)
+//	//if int(m.len) > untils.GlobalObj.MaxReadSize {
+//	//	return nil, err
+//	//}
+//	err = binary.Read(dr, binary.LittleEndian, &temp)
+//	if err != nil {
+//		return nil, err
+//	}
+//	m.data = temp // 切片赋值，指向相同 &m.data[0] == &temp[0]
+//	return &m, nil
+//}
+
+func (dpk *DataPack) Unpack(dataPack []byte, startIndex int) (myInterface.IMessage, error) {
 	m := Message{}
 
-	err := binary.Read(dr, binary.LittleEndian, &m.len)
-	if err != nil {
-		return nil, err
-	}
-	err = binary.Read(dr, binary.LittleEndian, &m.id)
-	if err != nil {
-		return nil, err
-	}
+	arr := make([]byte, 4)
+	copy(arr, dataPack[startIndex:])
+	m.len = binary.LittleEndian.Uint32(arr)
+	copy(arr, dataPack[startIndex+4:])
+	m.id = binary.LittleEndian.Uint32(arr)
 
 	// TODO 拷贝性能考虑
-	temp := make([]byte, m.len)
-	err = binary.Read(dr, binary.LittleEndian, temp)
-	if err != nil {
-		return nil, err
-	}
-	m.data = temp // 切片赋值，指向相同 &m.data[0] == &temp[0]
+	m.data = make([]byte, m.len)
+	copy(m.data, dataPack[startIndex+8:])
 	return &m, nil
 }
 

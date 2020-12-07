@@ -36,26 +36,34 @@ func (c *Connect) StartRead() {
 	dpk := NewDataPack()
 
 	for {
-		buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte
+		buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte TODO 非局部变量
 		cnt, err := c.Conn.Read(buf)
 		if err != nil {
 			log.Println("Read error ", err)
 			break
 		}
 
-		msg, err := dpk.Unpack(buf[:cnt])
-		if err != nil {
-			log.Println("Unpack Data Error ", err)
-			continue
-		}
+		startIndex := 0
+		for {
+			msg, err := dpk.Unpack(buf[:cnt], startIndex)
+			if err != nil {
+				log.Println("Unpack Data Error ", err)
+				break
+			}
 
-		r := &Request{
-			conn: c,
-			msg:  msg,
-		}
+			r := &Request{
+				conn: c,
+				msg:  msg,
+			}
 
-		// TODO GrPool 对 DoMsgHandier 考虑GrPool
-		go c.router.DoMsgHandier(r)
+			// TODO GrPool 对 DoMsgHandier 考虑GrPool
+			go c.router.DoMsgHandier(r)
+
+			startIndex += int(msg.GetLen()) + 8
+			if startIndex >= cnt {
+				break
+			}
+		}
 	}
 }
 

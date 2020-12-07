@@ -31,7 +31,7 @@ type json1 struct {
 }
 
 func (p *Player) SyncPid() {
-	log.Println("SyncPid run")
+	log.Println("SyncPid")
 	data, err := json.Marshal(json1{Id: p.Pid}) // TODO json
 	if err != nil {
 		log.Println(err)
@@ -41,13 +41,33 @@ func (p *Player) SyncPid() {
 }
 
 func (p *Player) SyncPos() {
-	log.Println("SyncPid pos")
+	log.Println("SyncPos")
 	data, err := json.Marshal(p.Pos) // TODO json
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	p.SendMsg(2, data)
+}
+
+type json3 struct {
+	Id int32
+	X  float32
+	Y  float32
+}
+
+func (p *Player) SyncOtherPos(id int32, X float32, Y float32) {
+	log.Println("SyncOtherPos")
+	data, err := json.Marshal(json3{
+		Id: id,
+		X:  X,
+		Y:  Y,
+	})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	p.SendMsg(3, data)
 }
 
 var pidGen int32 = 0
