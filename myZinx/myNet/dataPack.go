@@ -14,10 +14,6 @@ func NewDataPack() *DataPack {
 	return &DataPack{}
 }
 
-func (dpk *DataPack) GetHeadLen() uint32 {
-	return 8
-}
-
 func (dpk *DataPack) Unpack(dataPack []byte) (myInterface.IMessage, error) {
 	dr := bytes.NewReader(dataPack)
 	m := Message{}

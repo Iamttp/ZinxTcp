@@ -22,13 +22,13 @@ func init() {
 	path, _ := os.Getwd()
 	log.Println("Ready Read Json, Now Work Path : ", path)
 
-	dirs := [...]string{"myZinx", "awesomeProject/myZinx"}
+	dirs := [...]string{"myZinx", "awesomeProject/myZinx", "../.."}
 	var context []byte
 	var err error
 	for _, dir := range dirs {
 		context, err = ioutil.ReadFile(dir + "/conf/zinx.json")
 		if err != nil {
-			log.Println("Cannot Read conf/zinx.json", err)
+			log.Println("Cannot Read ", err)
 			continue
 		} else {
 			log.Println("Read Success! Read From ", dir)

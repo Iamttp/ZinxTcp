@@ -1,0 +1,77 @@
+package core
+
+import (
+	"awesomeProject/myZinx/MMODemo/Server/Person"
+	"awesomeProject/myZinx/MMODemo/Server/util"
+	"awesomeProject/myZinx/myInterface"
+	"awesomeProject/myZinx/myNet"
+	"encoding/json"
+	"log"
+	"sync"
+)
+
+type Player struct {
+	Pid  int32                // 玩家id，数据库主键生成
+	Conn myInterface.IConnect // 玩家连接
+
+	Pos    *util.Vector2  // 玩家位置
+	Person Person.IPerson // 玩家操作人物
+}
+
+func (p *Player) SendMsg(msgId uint32, data []byte) {
+	msg := myNet.Message{}
+	msg.SetId(msgId)
+	msg.SetData(data)
+	msg.SetLen((uint32)(len(data)))
+	p.Conn.SendMsg(&msg)
+}
+
+type json1 struct {
+	Id int32
+}
+
+func (p *Player) SyncPid() {
+	log.Println("SyncPid run")
+	data, err := json.Marshal(json1{Id: p.Pid}) // TODO json
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	p.SendMsg(1, data)
+}
+
+func (p *Player) SyncPos() {
+	log.Println("SyncPid pos")
+	data, err := json.Marshal(p.Pos) // TODO json
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	p.SendMsg(2, data)
+}
+
+var pidGen int32 = 0
+var pidLock sync.Mutex
+
+func NewPlayer(conn myInterface.IConnect) *Player {
+	var vec util.Vector2
+
+	pidLock.Lock()
+	id := pidGen
+	pidGen++
+	if id%2 == 1 {
+		vec.X = 4.0
+		vec.Y = 2.0
+	} else {
+		vec.X = 4.0
+		vec.Y = 1.0
+	}
+	pidLock.Unlock()
+
+	return &Player{
+		Pid:    id,
+		Conn:   conn,
+		Pos:    &vec,
+		Person: nil,
+	}
+}
