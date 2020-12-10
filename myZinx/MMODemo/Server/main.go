@@ -16,14 +16,24 @@ func onConnStart(conn myInterface.IConnect) {
 
 	players := wm.GetAllPlayers()
 	for _, play := range players {
+		if play.Pid == player.Pid {
+			continue
+		}
 		play.SyncOtherPos(player.Pid, player.Pos.X, player.Pos.Y)
+		player.SyncOtherPos(play.Pid, play.Pos.X, play.Pos.Y)
 	}
 	wm.Add(player)
 }
 
 func onConnStop(conn myInterface.IConnect) {
 	log.Println(conn.GetIdConnect(), "下线")
-	wm.Remove(int32(conn.GetIdConnect())) // TODO getIdConnect 和 player pid 相等 隐患
+	id := int32(conn.GetIdConnect())
+	wm.Remove(id) // TODO getIdConnect 和 player pid 相等 隐患
+
+	players := wm.GetAllPlayers()
+	for _, play := range players {
+		play.SyncUnPid(4, id)
+	}
 }
 
 type moveRouter struct {
@@ -31,17 +41,20 @@ type moveRouter struct {
 }
 
 func (pr *moveRouter) Handle(request myInterface.IRequest) {
-	log.Println("Start Move Handle")
+	// log.Println("Start Move Handle")
 
 	player := wm.GetPlayerById(int32(request.GetConnect().GetIdConnect()))
 	msg := request.GetMsg()
 	data := msg.GetData()
 	json.Unmarshal(data, &player.Pos)
 
-	log.Println("Server Get Msg : ", player.Pos)
+	//log.Println("Server Get Msg : ", player.Pos)
 
 	players := wm.GetAllPlayers()
 	for _, play := range players {
+		if play.Pid == player.Pid {
+			continue
+		}
 		play.SyncOtherPos(player.Pid, player.Pos.X, player.Pos.Y)
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"awesomeProject/myZinx/myNet"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"sync"
 )
 
@@ -57,7 +58,7 @@ type json3 struct {
 }
 
 func (p *Player) SyncOtherPos(id int32, X float32, Y float32) {
-	log.Println("SyncOtherPos")
+	//log.Println("SyncOtherPos")
 	data, err := json.Marshal(json3{
 		Id: id,
 		X:  X,
@@ -70,6 +71,18 @@ func (p *Player) SyncOtherPos(id int32, X float32, Y float32) {
 	p.SendMsg(3, data)
 }
 
+func (p *Player) SyncUnPid(msgid uint32, pid int32) {
+	log.Println("SyncPid")
+	data, err := json.Marshal(json1{Id: pid}) // TODO json
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	p.SendMsg(msgid, data)
+}
+
+//////////////////////////////////////////////////////////////////////
+
 var pidGen int32 = 0
 var pidLock sync.Mutex
 
@@ -79,13 +92,8 @@ func NewPlayer(conn myInterface.IConnect) *Player {
 	pidLock.Lock()
 	id := pidGen
 	pidGen++
-	if id%2 == 1 {
-		vec.X = 4.0
-		vec.Y = 2.0
-	} else {
-		vec.X = 4.0
-		vec.Y = 1.0
-	}
+	vec.X = -4 + rand.Float32()
+	vec.Y = 2 + rand.Float32()
 	pidLock.Unlock()
 
 	return &Player{

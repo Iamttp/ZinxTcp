@@ -2,7 +2,6 @@ package myNet
 
 import (
 	"awesomeProject/myZinx/myInterface"
-	"bytes"
 	"encoding/binary"
 )
 
@@ -40,7 +39,7 @@ func NewDataPack() *DataPack {
 //	return &m, nil
 //}
 
-func (dpk *DataPack) Unpack(dataPack []byte, startIndex int) (myInterface.IMessage, error) {
+func (dpk *DataPack) Unpack(dataPack []byte, startIndex int) myInterface.IMessage {
 	m := Message{}
 
 	arr := make([]byte, 4)
@@ -52,23 +51,13 @@ func (dpk *DataPack) Unpack(dataPack []byte, startIndex int) (myInterface.IMessa
 	// TODO 拷贝性能考虑
 	m.data = make([]byte, m.len)
 	copy(m.data, dataPack[startIndex+8:])
-	return &m, nil
+	return &m
 }
 
-func (dpk *DataPack) Pack(message myInterface.IMessage) ([]byte, error) {
-	dataBuf := new(bytes.Buffer)
-
-	err := binary.Write(dataBuf, binary.LittleEndian, message.GetLen())
-	if err != nil {
-		return nil, err
-	}
-	err = binary.Write(dataBuf, binary.LittleEndian, message.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = binary.Write(dataBuf, binary.LittleEndian, message.GetData())
-	if err != nil {
-		return nil, err
-	}
-	return dataBuf.Bytes(), nil
+func (dpk *DataPack) Pack(message myInterface.IMessage) []byte {
+	var res = make([]byte, 8+message.GetLen())
+	binary.LittleEndian.PutUint32(res[0:4], message.GetLen())
+	binary.LittleEndian.PutUint32(res[4:8], message.GetId())
+	copy(res[8:], message.GetData())
+	return res
 }

@@ -45,11 +45,8 @@ func (c *Connect) StartRead() {
 
 		startIndex := 0
 		for {
-			msg, err := dpk.Unpack(buf[:cnt], startIndex)
-			if err != nil {
-				log.Println("Unpack Data Error ", err)
-				break
-			}
+			log.Println("Unpack")
+			msg := dpk.Unpack(buf[:cnt], startIndex)
 
 			r := &Request{
 				conn: c,
@@ -129,11 +126,6 @@ func (c *Connect) GetRemoteAdd() net.Addr {
 
 func (c *Connect) SendMsg(msg myInterface.IMessage) {
 	dpk := NewDataPack()
-	binary, err := dpk.Pack(msg)
-	if err != nil {
-		log.Println("Msg Pack Error ", err)
-		return
-	}
-
+	binary := dpk.Pack(msg)
 	c.MsgChan <- binary
 }
