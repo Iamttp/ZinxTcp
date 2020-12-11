@@ -45,7 +45,6 @@ func (c *Connect) StartRead() {
 
 		startIndex := 0
 		for {
-			log.Println("Unpack")
 			msg := dpk.Unpack(buf[:cnt], startIndex)
 
 			r := &Request{

@@ -28,18 +28,18 @@ type IPerson interface {
 	dead()
 
 	// getter setter
-	setState(state State)
-	getState() State
+	SetState(state State)
+	GetState() State
 
-	setTypePerson(person typePerson)
-	getTypePerson() typePerson
+	SetTypePerson(person typePerson)
+	GetTypePerson() typePerson
 
-	setOwner(owner bool)
-	getOwner() bool
+	SetOwner(owner bool)
+	GetOwner() bool
 
-	setSpeedVal(speedVal float32)
-	getSpeedVal() float32
+	SetSpeedVal(speedVal float32)
+	GetSpeedVal() float32
 
-	setMoveVec(moveVec *util.Vector2)
-	getMoveVec() *util.Vector2
+	SetMoveVec(moveVec *util.Vector2)
+	GetMoveVec() *util.Vector2
 }

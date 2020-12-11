@@ -100,6 +100,6 @@ func NewPlayer(conn myInterface.IConnect) *Player {
 		Pid:    id,
 		Conn:   conn,
 		Pos:    &vec,
-		Person: nil,
+		Person: &Person.Person{},
 	}
 }
