@@ -7,32 +7,32 @@ import (
 type State uint8
 
 const (
-	idle   State = 0
-	run    State = 1
-	dead   State = 2
-	attack State = 3
-	hit    State = 4
+	Idle   State = 0
+	Run    State = 1
+	Dead   State = 2
+	Attack State = 3
+	Hit    State = 4
 )
 
-type typePerson uint8
+type TypePerson uint8
 
 const (
-	Sword  typePerson = 0
-	Anchor typePerson = 1
+	Sword  TypePerson = 0
+	Anchor TypePerson = 1
 )
 
 type IPerson interface {
-	move()
-	attack()
-	hit(val int)
-	dead()
+	Move()
+	Attack()
+	Hit(val int)
+	Dead()
 
 	// getter setter
 	SetState(state State)
 	GetState() State
 
-	SetTypePerson(person typePerson)
-	GetTypePerson() typePerson
+	SetTypePerson(person TypePerson)
+	GetTypePerson() TypePerson
 
 	SetOwner(owner bool)
 	GetOwner() bool

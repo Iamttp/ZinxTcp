@@ -32,3 +32,10 @@ func (v *Vector2) Div(b *Vector2) *Vector2 {
 func (v *Vector2) SquareLen() float32 {
 	return v.X*v.X + v.Y*v.Y
 }
+
+func NewVector2Zero() *Vector2 {
+	return &Vector2{
+		X: 0,
+		Y: 0,
+	}
+}

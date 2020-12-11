@@ -15,8 +15,8 @@ type Player struct {
 	Pid  int32                // 玩家id，数据库主键生成
 	Conn myInterface.IConnect // 玩家连接
 
-	Pos    *util.Vector2  // 玩家位置
-	Person Person.IPerson // 玩家操作人物
+	Pos     *util.Vector2  // 玩家位置
+	IPerson Person.IPerson // 玩家操作人物
 }
 
 func (p *Player) SendMsg(msgId uint32, data []byte) {
@@ -51,23 +51,30 @@ func (p *Player) SyncPos() {
 	p.SendMsg(2, data)
 }
 
-type json3 struct {
-	Id int32
-	X  float32
-	Y  float32
+type Json3 struct {
+	Id       int32
+	X        float32
+	Y        float32
+	State    Person.State
+	MoveVecX float32
+	MoveVecY float32
 }
 
-func (p *Player) SyncOtherPos(id int32, X float32, Y float32) {
+func (p *Player) SyncOtherPos(player *Player) {
 	//log.Println("SyncOtherPos")
-	data, err := json.Marshal(json3{
-		Id: id,
-		X:  X,
-		Y:  Y,
+	data, err := json.Marshal(Json3{
+		Id:       player.Pid,
+		X:        player.Pos.X,
+		Y:        player.Pos.Y,
+		State:    player.IPerson.GetState(),
+		MoveVecX: player.IPerson.GetMoveVec().X,
+		MoveVecY: player.IPerson.GetMoveVec().Y,
 	})
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	//log.Println("Send: ", data)
 	p.SendMsg(3, data)
 }
 
@@ -97,9 +104,9 @@ func NewPlayer(conn myInterface.IConnect) *Player {
 	pidLock.Unlock()
 
 	return &Player{
-		Pid:    id,
-		Conn:   conn,
-		Pos:    &vec,
-		Person: &Person.Person{},
+		Pid:     id,
+		Conn:    conn,
+		Pos:     &vec,
+		IPerson: Person.NewPerson(),
 	}
 }

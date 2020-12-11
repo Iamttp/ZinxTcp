@@ -46,6 +46,9 @@ func (c *Connect) StartRead() {
 		startIndex := 0
 		for {
 			msg := dpk.Unpack(buf[:cnt], startIndex)
+			if msg == nil {
+				break
+			}
 
 			r := &Request{
 				conn: c,

@@ -33,11 +33,7 @@ func main() {
 			sendMsg.SetId(0)
 		}
 		i = !i
-		binaryData, err := dpk.Pack(&sendMsg)
-		if err != nil {
-			log.Println(err)
-			return
-		}
+		binaryData := dpk.Pack(&sendMsg)
 
 		conn.Write(binaryData)
 
@@ -47,11 +43,7 @@ func main() {
 			log.Println("Read Error ", err)
 			break
 		}
-		getMsg, err := dpk.Unpack(buf[:n], 0)
-		if err != nil {
-			log.Println("Read Message Error ", err)
-			break
-		}
+		getMsg := dpk.Unpack(buf[:n], 0)
 
 		log.Println("Client Get Msg : ", getMsg)
 		time.Sleep(time.Second)

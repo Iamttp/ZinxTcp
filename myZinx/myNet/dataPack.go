@@ -3,6 +3,7 @@ package myNet
 import (
 	"awesomeProject/myZinx/myInterface"
 	"encoding/binary"
+	"log"
 )
 
 // len id data
@@ -45,11 +46,19 @@ func (dpk *DataPack) Unpack(dataPack []byte, startIndex int) myInterface.IMessag
 	arr := make([]byte, 4)
 	copy(arr, dataPack[startIndex:])
 	m.len = binary.LittleEndian.Uint32(arr)
+	if len(dataPack) <= startIndex+4 {
+		log.Println("startIndex + 4 >= len(dataPack) ")
+		return nil
+	}
 	copy(arr, dataPack[startIndex+4:])
 	m.id = binary.LittleEndian.Uint32(arr)
 
 	// TODO 拷贝性能考虑
 	m.data = make([]byte, m.len)
+	if len(dataPack) <= startIndex+8 {
+		log.Println("startIndex + 8 >= len(dataPack) ")
+		return nil
+	}
 	copy(m.data, dataPack[startIndex+8:])
 	return &m
 }
