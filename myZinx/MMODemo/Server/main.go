@@ -3,7 +3,6 @@ package main
 import (
 	"awesomeProject/myZinx/MMODemo/Server/Person"
 	"awesomeProject/myZinx/MMODemo/Server/core"
-	"awesomeProject/myZinx/MMODemo/Server/util"
 	"awesomeProject/myZinx/myInterface"
 	"awesomeProject/myZinx/myNet"
 	"encoding/json"
@@ -18,7 +17,7 @@ func onConnStart(conn myInterface.IConnect) {
 
 	players := wm.GetAllPlayers()
 	for _, play := range players {
-		if play.Pid == player.Pid {
+		if play.Json1.Id == player.Json1.Id {
 			continue
 		}
 		log.Println("SyncOtherPos in onConnStart")
@@ -35,7 +34,7 @@ func onConnStop(conn myInterface.IConnect) {
 
 	players := wm.GetAllPlayers()
 	for _, play := range players {
-		play.SyncUnPid(4, id)
+		play.SyncUnPid(id)
 	}
 }
 
@@ -48,25 +47,14 @@ func (pr *moveRouter) Handle(request myInterface.IRequest) {
 	player := wm.GetPlayerById(int32(request.GetConnect().GetIdConnect()))
 	msg := request.GetMsg()
 	data := msg.GetData()
-	jsonRecv := core.Json3{}
-	//log.Println(string(data))
-	json.Unmarshal(data, &jsonRecv)
+	json.Unmarshal(data, player.Json3)
 
-	//player := wm.GetPlayerById(jsonRecv.Id)
-	//log.Println(jsonRecv.Id, player)
-	player.Pos.X = jsonRecv.X
-	player.Pos.Y = jsonRecv.Y
-	player.IPerson.SetState(jsonRecv.State)
-	player.IPerson.SetMoveVec(&util.Vector2{
-		X: jsonRecv.MoveVecX,
-		Y: jsonRecv.MoveVecY,
-	})
 	players := wm.GetAllPlayers()
-	if jsonRecv.State == Person.Attack {
-		log.Println(player.Pid, " Attack")
+	if player.Json3.State == Person.Attack {
+		log.Println(player.Json1.Id, " Attack")
 	}
 	for _, play := range players {
-		if play.Pid == player.Pid {
+		if play.Json1.Id == player.Json1.Id {
 			continue
 		}
 		play.SyncOtherPos(player)

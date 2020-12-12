@@ -15,7 +15,7 @@ func NewWorldManager() *WorldManager {
 
 func (wm *WorldManager) Add(p *Player) {
 	wm.pLock.Lock()
-	wm.playerMap[p.Pid] = p
+	wm.playerMap[p.Json1.Id] = p
 	wm.pLock.Unlock()
 }
 

@@ -44,7 +44,7 @@ func (c *Connect) StartRead() {
 			break
 		}
 
-		//log.Println(cnt)
+		//log.Println(cnt , string(buf[:cnt]))
 
 		//////////////////////// 一旦超过容量，读取buf直到为空
 		flag := false
