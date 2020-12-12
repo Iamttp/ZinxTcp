@@ -35,6 +35,7 @@ func (c *Connect) StartRead() {
 
 	dpk := NewDataPack()
 
+	//buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte
 	for {
 		buf := make([]byte, untils.GlobalObj.MaxReadSize) // max 512 byte TODO 非局部变量
 		cnt, err := c.Conn.Read(buf)
@@ -43,13 +44,23 @@ func (c *Connect) StartRead() {
 			break
 		}
 
+		//log.Println(cnt)
+
+		//////////////////////// 一旦超过容量，读取buf直到为空
+		flag := false
+		for cnt == untils.GlobalObj.MaxReadSize {
+			cnt, err = c.Conn.Read(buf)
+			flag = true
+			log.Println("read out cnt :", cnt)
+		}
+		if flag {
+			continue
+		}
+		//////////////////////
+
 		startIndex := 0
 		for {
 			msg := dpk.Unpack(buf[:cnt], startIndex)
-			if msg == nil {
-				break
-			}
-
 			r := &Request{
 				conn: c,
 				msg:  msg,
